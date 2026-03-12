@@ -1,0 +1,24 @@
+steps:
+  # 1. Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', 
+      '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/capstone-repo/notes-app:$SHORT_SHA', 
+      '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/capstone-repo/notes-app:latest', 
+      '.'
+    ]
+
+  # 2. Explicitly push the images to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/capstone-repo/notes-app', '--all-tags']
+
+# Optional: Only use a custom log bucket if you have specifically configured 
+# IAM permissions for the Cloud Build Service Account to write to it.
+logs_bucket: 'gs://log_bucket_1112'
+
+options:
+  logging: GCS_ONLY
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/capstone-repo/notes-app:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/capstone-repo/notes-app:latest'
