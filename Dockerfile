@@ -1,19 +1,22 @@
-# Use the official Python slim image
-FROM python:3.11-slim
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install dependencies
+# Copy the requirements file into the container at /app
 COPY requirements.txt .
+
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
+# Copy the rest of the application code into the container
 COPY . .
 
+# Set environment variables
+ENV PORT 8080
+ENV PYTHONUNBUFFERED True
+
 # Run the application with Gunicorn
+# Using 1 worker and 8 threads for a basic app (typical for Cloud Run)
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
